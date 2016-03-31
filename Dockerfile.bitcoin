@@ -1,0 +1,37 @@
+FROM ubuntu:14.04
+
+MAINTAINER bernard.lin918@gmail.com
+
+RUN apt-get update
+
+RUN apt-get install -y software-properties-common \
+      build-essential \
+      autoconf \
+      cpp \
+      curl \
+      gcc-4.8\
+      libc-dev libssl-dev \
+      libc6-dev bsdmainutils \
+      libboost-all-dev \
+      libdb5.1++-dev\
+      libqt4-core libqt4-gui libqt4-dev \
+      git pkg-config
+
+
+RUN git clone https://github.com/bitcoin/bitcoin.git \
+    && cd bitcoin && \
+    git checkout "v0.9.5rc2" && \
+    ./autogen.sh && \
+    ./configure  --with-incompatible-bdb  PKG_CONFIG_PATH="/usr/lib/x86_64-linux-gnu/pkgconfig/" && \
+    make && \
+    make install
+
+RUN mkdir /root/.bitcoin && \
+    echo "rpcuser=bitcoinrpc1999" > /root/.bitcoin/bitcoin.conf && \
+    echo "rpcpassword=AwndjOjrje8383003WWdmncnYudU-1" >> \
+    /root/.bitcoin/bitcoin.conf
+
+EXPOSE 8333
+EXPOSE 8332
+
+CMD ["/usr/local/bin/bitcoind"]
